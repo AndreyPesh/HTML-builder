@@ -29,7 +29,7 @@ function printInfoAboutFiles(files, pathToFolder) {
 }
 
 function getSizeFile(fileInfo) {
-  const size = Math.floor(fileInfo.size / 1000) + ' kb';
+  const size = Math.ceil(fileInfo.size / 1024) + ' kb';
   return size;
 }
 
