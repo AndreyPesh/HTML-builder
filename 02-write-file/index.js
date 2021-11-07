@@ -1,25 +1,28 @@
 const path = require('path');
-const { createWriteStream } = require('fs');
+const fs = require('fs/promises');
 const readline = require('readline');
 const process = require('process');
 
 const pathToFile = path.join(__dirname, 'text.txt');
-
-const writeStream = createWriteStream(pathToFile, {flags: 'a+'});
 const readStream = readline.createInterface({input: process.stdin});
 
-writeStream.on('ready', () => console.log('Input line: '));
+init(pathToFile);
 
 readStream.on('line', lineHandler);
 
 process.on('SIGINT', () => {
-  closeWriteStream();
+  closeReadStream();
 });
+
+async function init(path) {
+  await fs.open(path, 'a');
+  console.log('Input line: ');
+}
 
 function lineHandler(line) {
   try {
     if (line === 'exit') {
-      closeWriteStream();
+      closeReadStream();
       return;
     }
 
@@ -30,11 +33,11 @@ function lineHandler(line) {
   }
 }
 
-function writeLineToFile(line) {
-  writeStream.write(line + '\n');
+async function writeLineToFile(line) {
+  await fs.appendFile(pathToFile, line + '\n');
 }
 
-function closeWriteStream() {
+function closeReadStream() {
   sayEndInput();
   readStream.close();
 }
